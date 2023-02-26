@@ -114,7 +114,6 @@ function generateColor(step: number, steps: number): string {
 
 // numFeatures = number of addl features. 0 = "plot only feature 1" (minimum)
 export const genData = (inputs: ChartProps) => {
-    console.log("CALLING GEN DATA")
     const {
         numFeatures,
         refactorCost,
@@ -137,12 +136,6 @@ export const genData = (inputs: ChartProps) => {
     labels = ["Feature 1"].concat(labels)
 
     const featureCosts: number[][] = [];
-    console.log("numFeatures: "+numFeatures.toString())
-    console.log("featureCost: "+featureCost.toString())
-    console.log("refactorCost: "+refactorCost.toString())
-    console.log("refactorMarginalCost: "+refactorMarginalCost.toString())
-    console.log("featureMarginalCost: "+featureMarginalCost.toString())
-    console.log("featureCosts: "+JSON.stringify(featureCosts))
 
     // scenario 0: no refactor
     // scenario 1: refactor with 2nd feature
@@ -153,11 +146,10 @@ export const genData = (inputs: ChartProps) => {
         // scenarioValues[0] is a fixed cost and the same for all scenarios (the "green field" first feature)
         const scenarioValues: number[] = [];
         for (let featureNumber = 0; featureNumber < labels.length; featureNumber++) {
-            const previousCost = scenarioValues.length ? scenarioValues[scenarioValues.length-1] : 0;
-
             let thisFeatureCost;
-            // no refactor scenario
+
             if (scenario == 0) {
+                // no refactor scenario
                 thisFeatureCost = featureCost * featureIncrementalCost ** featureNumber;
             } else if (featureNumber === scenario) {
                 // Refactoring at this step
@@ -172,18 +164,13 @@ export const genData = (inputs: ChartProps) => {
                 // this is post-refactor
                 thisFeatureCost = featureCost;
             }
+
+            const previousCost = scenarioValues.length ? scenarioValues[scenarioValues.length-1] : 0;
             scenarioValues.push(previousCost + thisFeatureCost);
         }
+
         featureCosts.push(scenarioValues);
     }
-
-    console.log("numFeatures: "+numFeatures.toString())
-    console.log("featureCost: "+featureCost.toString())
-    console.log("refactorCost: "+refactorCost.toString())
-    console.log("refactorMarginalCost: "+refactorMarginalCost.toString())
-    console.log("featureMarginalCost: "+featureMarginalCost.toString())
-    console.log("featureCosts: "+JSON.stringify(featureCosts))
-    console.log(featureCosts.toString())
 
     const noRefactorScenario = {
         label: "No Refactor",
