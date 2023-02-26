@@ -1,87 +1,59 @@
-// import React from 'react';
-// import logo from "./images/logo.svg";
-// import './App.css';
-//
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-//
-// export default App;
 import React from 'react';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-);
-
-export const options = {
-    responsive: true,
-    plugins: {
-        legend: {
-            position: 'top' as const,
-        },
-        title: {
-            display: true,
-            text: 'Chart.js Line Chart',
-        },
-    },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: 'Dataset 1',
-            data: labels.map(() => Math.random() * 1000),
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-            label: 'Dataset 2',
-            data: labels.map(() => Math.random() * 1000),
-            borderColor: 'rgb(53, 162, 235)',
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        },
-    ],
-};
+import Chart from "./Chart";
+import ChartInputs from "./ChartInputs";
 
 function App() {
-    return <Line options={options} data={data} />;
+    const [numFeatures, setNumFeatures] = React.useState(5);
+    const [refactorCost, setRefactorCost] = React.useState(5);
+    const [featureCost, setFeatureCost] = React.useState(5);
+    const [featureMarginalCost, setFeatureMarginalCost] = React.useState(20);
+    const [refactorMarginalCost, setRefactorMarginalCost] = React.useState(10);
+
+    const inputs = [
+        {
+            label: "# Features",
+            onChange: setNumFeatures,
+            value: numFeatures,
+            min: 0,
+        },
+        {
+            label: "Refactor Cost",
+            onChange: setRefactorCost,
+            value: refactorCost,
+            min: 0,
+        },
+        {
+            label: "Refactor Marginal Cost %",
+            onChange: setRefactorMarginalCost,
+            value: refactorMarginalCost,
+            min: 0,
+        },
+        {
+            label: "Feature Cost",
+            onChange: setFeatureCost,
+            value: featureCost,
+            min: 0,
+        },
+        {
+            label: "Feature Marginal Cost %",
+            onChange: setFeatureMarginalCost,
+            value: featureMarginalCost,
+            min: 0,
+        }
+    ]
+
+    return (
+        <div>
+            <ChartInputs inputs={inputs} />
+            <Chart
+                numFeatures={numFeatures}
+                refactorCost={refactorCost}
+                featureCost={featureCost}
+                featureMarginalCost={featureMarginalCost}
+                refactorMarginalCost={refactorMarginalCost}
+            />
+        </div>
+    )
 }
 
 export default App;
