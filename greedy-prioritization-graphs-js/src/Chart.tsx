@@ -154,26 +154,25 @@ export const genData = (inputs: ChartProps) => {
         const scenarioValues: number[] = [];
         for (let featureNumber = 0; featureNumber < labels.length; featureNumber++) {
             const previousCost = scenarioValues.length ? scenarioValues[scenarioValues.length-1] : 0;
+
+            let thisFeatureCost;
             // no refactor scenario
             if (scenario == 0) {
-                scenarioValues.push(previousCost + featureCost * featureIncrementalCost ** featureNumber);
+                thisFeatureCost = featureCost * featureIncrementalCost ** featureNumber;
             } else if (featureNumber === scenario) {
                 // Refactoring at this step
                 const additionalFeatureCost = featureCost * featureIncrementalCost ** (featureNumber - 1);
-                scenarioValues.push(
-                    featureCost
-                    + previousCost
-                    + refactorCost * refactorIncrementalCost ** featureNumber
-                    + additionalFeatureCost
-                )
+                const thisRefactorCost = refactorCost * refactorIncrementalCost ** featureNumber
+
+                thisFeatureCost = featureCost + thisRefactorCost + additionalFeatureCost
             } else if (featureNumber < scenario) {
                 // Getting greedy
-                // this is pre-refactor
-                scenarioValues.push(previousCost + (featureCost * featureIncrementalCost ** featureNumber));
+                thisFeatureCost = featureCost * featureIncrementalCost ** featureNumber
             } else {
                 // this is post-refactor
-                scenarioValues.push(previousCost + featureCost);
+                thisFeatureCost = featureCost;
             }
+            scenarioValues.push(previousCost + thisFeatureCost);
         }
         featureCosts.push(scenarioValues);
     }
