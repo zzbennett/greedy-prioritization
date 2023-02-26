@@ -38,6 +38,80 @@ function range(length: number) {
    return Array.from({length: length}, (x, i) => i);
 }
 
+function numberToString(n: number): string {
+    const lastDigit = n % 10;
+    let suffix: string;
+    switch (lastDigit) {
+        case 1:
+            suffix = "st";
+            break;
+        case 2:
+            suffix = "nd";
+            break;
+        case 3:
+            suffix = "rd";
+            break;
+        default:
+            suffix = "th";
+            break;
+    }
+    return `${n}${suffix}`;
+}
+
+function HSVtoRGB(h: number, s: number, v: number) {
+    var r, g, b;
+    const i = Math.floor(h * 6);
+    const f = h * 6 - i;
+    const p = v * (1 - s);
+    const q = v * (1 - f * s);
+    const t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+        case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+        case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+        case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+        case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+        case 5:
+            r = v;
+            g = p;
+            b = q;
+            break;
+    }
+    return [
+        Math.round(r * 255),
+        Math.round(g * 255),
+        Math.round(b * 255),
+    ];
+}
+
+function generateColor(step: number, steps: number): string {
+    // Red = 0, Green = 120
+    const increment = 120.0 / steps;
+    const h = 120 - increment * step;
+    const [r, g, b] = HSVtoRGB(h / 360.0, 1, 0.8);
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
 // numFeatures = number of addl features. 0 = "plot only feature 1" (minimum)
 export const genData = (inputs: ChartProps) => {
     console.log("CALLING GEN DATA")
@@ -111,41 +185,25 @@ export const genData = (inputs: ChartProps) => {
     console.log("featureMarginalCost: "+featureMarginalCost.toString())
     console.log("featureCosts: "+JSON.stringify(featureCosts))
     console.log(featureCosts.toString())
-    return {
-        labels: labels,
-        datasets: [
-            {
-                label: 'No Refactor',
-                data: featureCosts[0],
-                borderColor: 'rgb(100, 99, 132)',
-                backgroundColor: 'rgba(100, 99, 132, 0.5)',
-            },
-            {
-                label: 'Refactor with second feature',
-                data: featureCosts[1],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-            {
-                label: 'Refactor with third feature',
-                data: featureCosts[2],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-            {
-                label: 'Refactor with fourth feature',
-                data: featureCosts[3],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-            {
-                label: 'Refactor with fifth feature',
-                data: featureCosts[4],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-        ],
-    }
+
+    const noRefactorScenario = {
+        label: "No Refactor",
+        data: featureCosts[0],
+        borderColor: '#ff0000',
+        backgroundColor: '#ff0000',
+    };
+
+    const datasets = [
+        noRefactorScenario,
+        ...featureCosts.slice(1).map((featureCost, index) => ({
+            label: `Refactor with ${numberToString(index+1)} feature`,
+            data: featureCost,
+            borderColor: generateColor(index+1, featureCosts.length),
+            backgroundColor: generateColor(index+1, featureCosts.length),
+        }))
+    ];
+
+    return {labels, datasets};
 };
 
 type ChartProps = {
